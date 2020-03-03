@@ -25,7 +25,7 @@ class LoadBalance(object):
 
     def load_balance(self):
         '''
-
+    
         '''    
         # If there are still users, a new VM (chain) will be made  
         while np.array(self.users_input, int).any():
@@ -78,7 +78,9 @@ class LoadBalance(object):
 
     def _vm_cost(self,vm, price=1):
         '''
-
-        '''
+        Calculate the price of a given VM
+        np.array vm: numpy array of users on a given VM
+        float price: price value of a single tick. Defaul = 1
+        '''        
         vm_cost = np.count_nonzero(vm) * price
         return vm_cost
