@@ -11,7 +11,7 @@ def main(input_path=None, output_path=None):
         output_path = 'test/random_output.txt'
         print('Performing random test')
         input_data = random_data()
-        print(input_data)
+        print(f'inputs: {input_data}')
     # Processing
     new_balance = LoadBalance(input_data[0], input_data[1], input_data[2:])
 

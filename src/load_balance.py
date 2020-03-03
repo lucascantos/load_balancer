@@ -1,8 +1,5 @@
 import numpy as np
 
-# self.users_input = [1,3,0,1,0,1]
-# self.umax = 2
-# self.ttask = 4
 '''
 A simple load balance algorithm.
 The idea is to check the final cost of Virtual Machines
