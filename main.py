@@ -16,24 +16,25 @@ def make_chain(index, value):
         chain_ticks[index + link] = value
     return chain_ticks
 
-chain_index = [0]
-
 def check_chains(index): 
     if np.any(np.array(chain_index)[:] == index):
         return
     else:
         chain_index.append(index)
 
+chain_index = [0]
+
 flag = True
 while len(chain_index) > 0:
     print(f"New Chain starting at {chain_index[0]}")
     dynamic_vm = np.zeros(ttask + len(users_input))
     rolling_sum = 0
+    cap_meter = 2
     for index in range(chain_index[0], len(users_input)):
         users = users_input[index]
-        users_diff = users
-        
-        rolling_sum += users_diff        
+        users_diff = users        
+        rolling_sum += users_diff  
+         
         if users_diff > 0:
             if np.any(dynamic_vm + make_chain(index, users_diff)[:] > umax):
                 check_chains(index)
@@ -47,12 +48,13 @@ while len(chain_index) > 0:
                 cap_meter = umax - users_diff
                 users_input[index] -= cap_meter
             else:
-                # check_chains(index)
+                check_chains(index)
                 continue     
   
             dynamic_vm += make_chain(index, users_diff)
-
+    print(users_input)
     print(f'index: {index} - {users_diff} | {cap_meter} | {rolling_sum} | {total_ticks} | {dynamic_vm}')
+
     del chain_index[0]
     
 
