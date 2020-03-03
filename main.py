@@ -5,7 +5,7 @@ users_input = [1,3,0,1,0,1]
 umax = 2
 ttask = 4
 
-def make_chain(index):
+def make_chain(index, value):
     chain_ticks = np.zeros(ttask + len(users_input))
 
     if index > len(users_input):
@@ -13,50 +13,47 @@ def make_chain(index):
         return None
 
     for link in range(ttask):
-        chain_ticks[index + link] = 1
+        chain_ticks[index + link] = value
     return chain_ticks
 
-# Make a list with machines which will last only ttask
-n_machines = lambda x: math.floor(x/umax)
-solo_machine = [n_machines(users) if users>umax else 0 for users in users_input]
+chain_index = [0]
 
-def check_chains(index):
-    if np.any(chain_index[:] == index):
-        print("ja tem")
+def check_chains(index): 
+    if np.any(np.array(chain_index)[:] == index):
         return
     else:
         chain_index.append(index)
 
-
-chain_index = [0]
 flag = True
-while flag:
+while len(chain_index) > 0:
     print(f"New Chain starting at {chain_index[0]}")
-    dynamic_machine = np.zeros(ttask + len(users_input))
+    dynamic_vm = np.zeros(ttask + len(users_input))
     rolling_sum = 0
     for index in range(chain_index[0], len(users_input)):
-        print(index)
         users = users_input[index]
-        users_diff = users - solo_machine[index]*umax
-
+        users_diff = users
         
         rolling_sum += users_diff        
         if users_diff > 0:
-            if np.any(dynamic_machine + make_chain(index)[:] > umax):
-                print(f'index: {index} insidelink')
+            if np.any(dynamic_vm + make_chain(index, users_diff)[:] > umax):
                 check_chains(index)
-                continue
+                if cap_meter <= 0:
+                    continue
+                else:
+                    users_diff = cap_meter
 
-            if 0 < dynamic_machine[index] < umax  or index == chain_index[0]:
+            if 0 < dynamic_vm[index] < umax  or index == chain_index[0]:
                 total_ticks = index + ttask-1 
+                cap_meter = umax - users_diff
+                users_input[index] -= cap_meter
             else:
-                print(f"index: {index} new chain m8")
-                check_chains(index)
+                # check_chains(index)
                 continue     
+  
+            dynamic_vm += make_chain(index, users_diff)
 
-            dynamic_machine += make_chain(index)
-        print(f'index: {index} - {users_diff} | {rolling_sum} | {total_ticks} | {dynamic_machine}')
-    flag = False
+    print(f'index: {index} - {users_diff} | {cap_meter} | {rolling_sum} | {total_ticks} | {dynamic_vm}')
+    del chain_index[0]
     
 
         #     if rolling_sum == 0:
