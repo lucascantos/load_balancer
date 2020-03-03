@@ -21,35 +21,42 @@ n_machines = lambda x: math.floor(x/umax)
 solo_machine = [n_machines(users) if users>umax else 0 for users in users_input]
 
 
-new_chain = True
-dynamic_machine = []
-chain_index = []
-while new_chain:
-
+chain_index = [0]
+for new_chain in chain_index:
+    print("making new chain")
+    dynamic_machine = np.zeros(ttask + len(users_input))
     rolling_sum = 0
-
     for index in range(len(users_input)):
         users = users_input[index]
         users_diff = users - solo_machine[index]*umax
-        print(f'index: {index}')
 
+        
+        rolling_sum += users_diff
+        
         if users_diff > 0:
-            if rolling_sum == 0:
-                print("NEW CHAIN")
-                vm_tick_users = np.zeros(ttask + len(users_input))
-                
-            rolling_sum += users_diff
-            if rolling_sum <= umax:
-                total_ticks = index + ttask
-                vm_tick_users += make_chain(index)
-            else:             
-                dynamic_machine.append(vm_tick_users)   
-                rolling_sum = 0           
+            if np.any(dynamic_machine + make_chain(index)[:] > umax):
+                print(f'index: {index} insidelink')
+                chain_index.append(index)
+                continue
+            if 0 < dynamic_machine[index] < umax  or index <= 0:
+                total_ticks = index + ttask  
+            else:
+                print(f"index: {index} new chain m8")
+                chain_index.append(index)
+                continue      
+            dynamic_machine += make_chain(index)
+        print(f'index: {index} - {users_diff} | {rolling_sum} | {total_ticks} | {dynamic_machine}')
 
-            
-            print(vm_tick_users)
-    print(dynamic_machine)
-    new_chain=False
+        
+
+        #     if rolling_sum == 0:
+        #         print("NEW CHAIN")
+        #         vm_tick_users = np.zeros(ttask + len(users_input))
+                
+        #     rolling_sum += users_diff
+        #     if rolling_sum > umax:
+        #         print("Overflow")
+        #         rolling_sum = umax
 
 
 
