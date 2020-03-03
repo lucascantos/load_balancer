@@ -20,34 +20,44 @@ def make_chain(index):
 n_machines = lambda x: math.floor(x/umax)
 solo_machine = [n_machines(users) if users>umax else 0 for users in users_input]
 
+def check_chains(index):
+    if np.any(chain_index[:] == index):
+        print("ja tem")
+        return
+    else:
+        chain_index.append(index)
+
 
 chain_index = [0]
-for new_chain in chain_index:
-    print("making new chain")
+flag = True
+while flag:
+    print(f"New Chain starting at {chain_index[0]}")
     dynamic_machine = np.zeros(ttask + len(users_input))
     rolling_sum = 0
-    for index in range(len(users_input)):
+    for index in range(chain_index[0], len(users_input)):
+        print(index)
         users = users_input[index]
         users_diff = users - solo_machine[index]*umax
 
         
-        rolling_sum += users_diff
-        
+        rolling_sum += users_diff        
         if users_diff > 0:
             if np.any(dynamic_machine + make_chain(index)[:] > umax):
                 print(f'index: {index} insidelink')
-                chain_index.append(index)
+                check_chains(index)
                 continue
-            if 0 < dynamic_machine[index] < umax  or index <= 0:
-                total_ticks = index + ttask  
+
+            if 0 < dynamic_machine[index] < umax  or index == chain_index[0]:
+                total_ticks = index + ttask-1 
             else:
                 print(f"index: {index} new chain m8")
-                chain_index.append(index)
-                continue      
+                check_chains(index)
+                continue     
+
             dynamic_machine += make_chain(index)
         print(f'index: {index} - {users_diff} | {rolling_sum} | {total_ticks} | {dynamic_machine}')
-
-        
+    flag = False
+    
 
         #     if rolling_sum == 0:
         #         print("NEW CHAIN")
